@@ -2,7 +2,7 @@
 
 ### Registrar ponto
 ```bash
-curl --request GET \
+curl --request POST \
   --url 'http://localhost:8080/registrar-ponto?colaboradorId=1' \
   --header 'Content-Type: application/json'
 ```
