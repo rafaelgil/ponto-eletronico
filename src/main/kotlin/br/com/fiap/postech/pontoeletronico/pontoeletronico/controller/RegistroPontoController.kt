@@ -11,8 +11,8 @@ class RegistroPontoController(
         private val registroPontoService: RegistroPontoService,
 ) {
     @PostMapping
-    fun registrarPonto(@RequestBody registroPontoRequest: RegistroPontoRequestDto): ResponseEntity<Any> {
-        return registroPontoService.registroPonto(registroPontoRequest)
+    fun registrarPonto(@RequestParam("colaboradorId") colaboradorId: Long): ResponseEntity<Any> {
+        return registroPontoService.registroPonto(colaboradorId)
     }
 }
 
