@@ -2,7 +2,6 @@ package br.com.fiap.postech.pontoeletronico.pontoeletronico.service
 
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.RegistroPonto
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.ErrorResponseDto
-import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.RegistroPontoRequestDto
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.RegistroPontoResponseDto
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.repository.ColaboradorRepository
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.repository.RegistroPontoRepository
@@ -17,8 +16,8 @@ class RegistroPontoService(
         private val registroPontoRepository: RegistroPontoRepository,
         private val colaboradorRepository: ColaboradorRepository
 ) {
-    fun registroPonto(colaboradorId: Long): ResponseEntity<Any> {
-        val colaboradorOpt = colaboradorRepository.findById(colaboradorId)
+    fun registroPonto(matricula: String): ResponseEntity<Any> {
+        val colaboradorOpt = colaboradorRepository.findByMatricula(matricula)
 
         if (colaboradorOpt.isEmpty) {
             val errorResponse = ErrorResponseDto(
@@ -36,8 +35,8 @@ class RegistroPontoService(
 
         val novoRegistroPonto = RegistroPonto(
                 colaborador = colaborador,
-                tipo = determinarTipoDeRegistro(ultimoRegistroHoje),
-                hora = LocalDateTime.now()
+                hora = LocalDateTime.now(),
+                tipo = determinarTipoDeRegistro(ultimoRegistroHoje)
         )
 
         registroPontoRepository.save(novoRegistroPonto)
@@ -45,7 +44,8 @@ class RegistroPontoService(
         val responseDto = RegistroPontoResponseDto(
                 tipo = novoRegistroPonto.tipo,
                 hora = novoRegistroPonto.hora,
-                nomeUsuario = colaborador.nome
+                nomeColaborador = colaborador.nome,
+                matriculaColaborador =  colaborador.matricula
         )
 
         return ResponseEntity.ok(responseDto)
