@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+# INFRA PEDIDO
+  postgres-compose:
+    image: postgres
+    environment:
+      POSTGRES_DB: pontoeletronico
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "123456"
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ponto-eletronico-postgres:/data/postgres
+    networks:
+      - postgres-network
+
+volumes:
+  ponto-eletronico-postgres:
