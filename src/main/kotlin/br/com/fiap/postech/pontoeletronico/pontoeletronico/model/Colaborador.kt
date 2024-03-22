@@ -11,6 +11,5 @@ class Colaborador(
         val id: Long? = null,
         val nome: String,
         val matricula: String,
-        val usuario: String,
         val senha: String
 )

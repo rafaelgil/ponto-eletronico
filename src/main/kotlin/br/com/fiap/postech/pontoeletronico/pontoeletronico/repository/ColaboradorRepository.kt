@@ -8,4 +8,7 @@ import java.util.Optional
 interface ColaboradorRepository : JpaRepository<Colaborador, Long> {
     @Query("SELECT c FROM Colaborador c WHERE c.matricula = :matricula")
     fun findByMatricula(matricula: String): Optional<Colaborador>
+
+    @Query("SELECT c FROM Colaborador c WHERE c.nome = :nome")
+    fun findByNome(nome: String): Optional<Colaborador>
 }

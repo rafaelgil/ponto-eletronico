@@ -4,6 +4,7 @@ import br.com.fiap.postech.pontoeletronico.pontoeletronico.RegistroPonto
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.*
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.repository.ColaboradorRepository
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.repository.RegistroPontoRepository
+import br.com.fiap.postech.pontoeletronico.pontoeletronico.security.JwtUtil
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -11,17 +12,18 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalField
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Local
 
 @Service
 class RegistroPontoService(
         private val registroPontoRepository: RegistroPontoRepository,
-        private val colaboradorRepository: ColaboradorRepository
+        private val colaboradorRepository: ColaboradorRepository,
+        private val jwtUtil: JwtUtil
 ) {
-    fun registroPonto(matricula: String): ResponseEntity<Any> {
+    fun registroPonto(matricula: String, token: String): ResponseEntity<Any> {
+
+        jwtUtil.isValidToken(token)
+
         val colaboradorOpt = colaboradorRepository.findByMatricula(matricula)
 
         if (colaboradorOpt.isEmpty) {
@@ -56,7 +58,9 @@ class RegistroPontoService(
         return ResponseEntity.ok(responseDto)
     }
 
-    fun visualizaPontoDia(colaboradorId: Long, data: LocalDate): ResponseEntity<Any> {
+    fun visualizaPontoDia(colaboradorId: Long, data: LocalDate, token: String): ResponseEntity<Any> {
+
+        jwtUtil.isValidToken(token)
 
         val colaboradorOpt = colaboradorRepository.findById(colaboradorId)
 
@@ -71,7 +75,7 @@ class RegistroPontoService(
 
         val registros = registroPontoRepository.findTopByColaboradorAndDateOrderByHoraDesc(colaborador = colaboradorOpt.get(), data)
 
-        val registrosDto = registros.map { RegistroPontoResponseDto(it.tipo, it.hora, it.colaborador.nome) }
+        val registrosDto = registros.map { RegistroPontoResponseDto(it.tipo, it.hora, it.colaborador.nome, it.colaborador.matricula) }
 
         if (registrosDto.size % 2 != 0) {
             val visualizacaoRegistrosResponseDto = VisualizacaoRegistrosResponseDto(
@@ -89,7 +93,9 @@ class RegistroPontoService(
         return ResponseEntity.ok(visualizacaoRegistrosResponseDto)
     }
 
-    fun visualizaEspelhoPonto(colaboradorId: Long, ano: Int, mes: Int): ResponseEntity<Any> {
+    fun visualizaEspelhoPonto(colaboradorId: Long, ano: Int, mes: Int, token: String): ResponseEntity<Any> {
+
+        jwtUtil.isValidToken(token)
 
         val colaboradorOpt = colaboradorRepository.findById(colaboradorId)
 
@@ -128,7 +134,7 @@ class RegistroPontoService(
 
         val registros = registroPontoRepository.findTopByColaboradorAndYearAndHourOrderByHoraDesc(colaborador, dataInicio, dataFim)
 
-        val registrosDto = registros.map { RegistroPontoResponseDto(it.tipo, it.hora, it.colaborador.nome) }
+        val registrosDto = registros.map { RegistroPontoResponseDto(it.tipo, it.hora, it.colaborador.nome, it.colaborador.matricula) }
 
         val mapRegistros = agrupaPordia(registrosDto)
 
