@@ -5,5 +5,6 @@ import java.time.LocalDateTime
 data class RegistroPontoResponseDto(
         val tipo: String,
         val hora: LocalDateTime,
-        val nomeUsuario: String
+        val nomeColaborador: String,
+        val matriculaColaborador: String
 )
