@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  postgres-compose:
+    image: postgres
+    environment:
+      POSTGRES_DB: pontoeletronico
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "123456"
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - postgres-network
+
+#  ponto-eletronico:
+#    build: .
+#    ports:
+#      - "8094:8080"
+#    environment:
+#      JAVA_OPTS: -Ddatabase_url=postgres-compose -Ddatabase_user=postgres -Ddatabase_password=Postgres2023
+#    networks:
+#      - postgres-network
+#    depends_on:
+#      - postgres-compose
+
+networks:
+  postgres-network:
+    driver: bridge
+
+volumes:
+  postgres:

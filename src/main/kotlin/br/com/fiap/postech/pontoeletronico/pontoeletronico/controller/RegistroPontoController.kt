@@ -11,19 +11,31 @@ class RegistroPontoController(
         private val registroPontoService: RegistroPontoService,
 ) {
     @PostMapping
-    fun registrarPonto(@RequestParam("matricula") matricula: String): ResponseEntity<Any> {
-        return registroPontoService.registroPonto(matricula)
+    fun registrarPonto(
+            @RequestParam("matricula") matricula: String,
+            @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<Any> {
+        return registroPontoService.registroPonto(matricula, authorization)
     }
 
     @GetMapping
-    fun relatorioPonto(@RequestParam("colaboradorId") colaboradorId: Long, @RequestParam("data") data: LocalDate): ResponseEntity<Any> {
-        return registroPontoService.visualizaPontoDia(colaboradorId, data)
+    fun relatorioPonto(
+        @RequestParam("colaboradorId") colaboradorId: Long,
+        @RequestParam("data") data: LocalDate,
+        @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<Any> {
+        return registroPontoService.visualizaPontoDia(colaboradorId, data, authorization)
     }
 
     @GetMapping
     @RequestMapping("/espelho")
-    fun relatorioEspelhoPonto(@RequestParam("colaboradorId") colaboradorId: Long, @RequestParam("ano") ano: Int, @RequestParam("mes") mes: Int): ResponseEntity<Any> {
-        return registroPontoService.visualizaEspelhoPonto(colaboradorId, ano, mes)
+    fun relatorioEspelhoPonto(
+        @RequestParam("colaboradorId") colaboradorId: Long,
+        @RequestParam("ano") ano: Int,
+        @RequestParam("mes") mes: Int,
+        @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<Any> {
+        return registroPontoService.visualizaEspelhoPonto(colaboradorId, ano, mes, authorization)
     }
 }
 
