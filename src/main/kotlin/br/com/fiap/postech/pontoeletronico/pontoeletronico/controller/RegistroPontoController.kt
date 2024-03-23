@@ -1,6 +1,5 @@
-package br.com.fiap.postech.pontoeletronico.pontoeletronico
+package br.com.fiap.postech.pontoeletronico.pontoeletronico.controller
 
-import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.RegistroPontoRequestDto
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.service.RegistroPontoService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -30,11 +29,12 @@ class RegistroPontoController(
 
     @GetMapping
     @RequestMapping("/espelho")
-    suspend fun relatorioEspelhoPonto(@RequestParam("colaboradorId") colaboradorId: Long,
+    suspend fun relatorioEspelhoPonto(@RequestHeader("Authorization") authorization: String,
+                                      @RequestParam("colaboradorId") colaboradorId: Long,
                                       @RequestParam("email") email: String,
                                       @RequestParam("ano") ano: Int,
                                       @RequestParam("mes") mes: Int): ResponseEntity<Any> {
-        return registroPontoService.visualizaEspelhoPonto(colaboradorId, email, ano, mes)
+        return registroPontoService.visualizaEspelhoPonto(colaboradorId, email, ano, mes, authorization)
     }
 }
 
