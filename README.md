@@ -1,4 +1,4 @@
-# ponto-eletronico 2
+# ponto-eletronico
 
 ## Endpoints
 
