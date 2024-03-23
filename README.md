@@ -27,7 +27,7 @@ curl --location 'http://localhost:8080/registrar-ponto?colaboradorId=1&data=2024
 
 ### Relatório Espelho de Ponto
 ```bash
-curl --location 'http://localhost:8080/registrar-ponto/espelho?colaboradorId=1&ano=2024&mes=03' \
+curl --location 'http://localhost:8080/registrar-ponto/espelho?colaboradorId=1&ano=2024&mes=03&email=teste@fiap.com' \
 --header 'Authorization: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMjM0NTY3ODkiLCJleHAiOjE3MTEwNzg2NDB9.RgS1-jcvLoFcc3UDU4aLLfhzAxd_ETUThM80DbwKOzYxxF_MxYixB47gk793If_o-1gvlQJ0PlzXPHFmbXLPsg'
 ```
 
