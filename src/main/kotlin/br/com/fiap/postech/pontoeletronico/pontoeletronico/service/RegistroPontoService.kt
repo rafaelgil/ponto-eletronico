@@ -1,7 +1,10 @@
 package br.com.fiap.postech.pontoeletronico.pontoeletronico.service
 
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.RegistroPonto
-import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.*
+import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.ErrorResponseDto
+import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.EspelhoPontoDto
+import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.RegistroPontoResponseDto
+import br.com.fiap.postech.pontoeletronico.pontoeletronico.dto.VisualizacaoRegistrosResponseDto
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.repository.ColaboradorRepository
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.repository.RegistroPontoRepository
 import br.com.fiap.postech.pontoeletronico.pontoeletronico.security.JwtUtil
@@ -18,7 +21,8 @@ import java.util.*
 class RegistroPontoService(
         private val registroPontoRepository: RegistroPontoRepository,
         private val colaboradorRepository: ColaboradorRepository,
-        private val jwtUtil: JwtUtil
+        private val jwtUtil: JwtUtil,
+        private val emailService: EmailService
 ) {
     fun registroPonto(matricula: String, token: String): ResponseEntity<Any> {
 
@@ -93,7 +97,7 @@ class RegistroPontoService(
         return ResponseEntity.ok(visualizacaoRegistrosResponseDto)
     }
 
-    fun visualizaEspelhoPonto(colaboradorId: Long, ano: Int, mes: Int, token: String): ResponseEntity<Any> {
+    suspend fun visualizaEspelhoPonto(colaboradorId: Long, emailDestinatario: String, ano: Int, mes: Int, token: String): ResponseEntity<Any> {
 
         jwtUtil.isValidToken(token)
 
@@ -160,8 +164,44 @@ class RegistroPontoService(
             }
         })
 
-        return ResponseEntity.ok(EspelhoPontoDto(listVisualizacaoRegistrosResponseDto, totalHoras))
+        val espelhoPontoDto = EspelhoPontoDto(listVisualizacaoRegistrosResponseDto, totalHoras)
 
+        emailService.enviarEmail(emailDestinatario, "Ponto Eletrônico", espelhoPontoEmFormatoHtml(espelhoPontoDto))
+
+        return ResponseEntity.ok(espelhoPontoDto)
+
+    }
+
+    private fun espelhoPontoEmFormatoHtml(espelhoPontoDto: EspelhoPontoDto): String {
+
+        var mensagemHtml: String = "<h1>Ponto Eletrônico</h1>"
+
+
+        mensagemHtml += "<table>"
+
+
+        espelhoPontoDto.registros.forEach({
+
+            mensagemHtml += "<tr>"
+            mensagemHtml += "<td>Dia</td>"
+            mensagemHtml += "<td>Registros</td>"
+            mensagemHtml += "</tr>"
+
+            mensagemHtml += "<tr>"
+            mensagemHtml += "<td>" + it.registros.get(0).hora.dayOfMonth + "</td>"
+            mensagemHtml += "<td><table><tr><td>Evento</td><tr>Hora</td></tr>"
+            it.registros.forEach({
+                mensagemHtml += "<tr><td>" + it.tipo + "</td><td>" + it.hora.hour + "</td></tr>"
+            })
+            mensagemHtml += "</td></tr>"
+        })
+
+        mensagemHtml += "</table>"
+
+        mensagemHtml += "<p>Total de Horas Trabalhadas: " + espelhoPontoDto.totalHoras + "</p>"
+
+
+        return mensagemHtml
     }
 
     private fun determinarTipoDeRegistro(ultimoRegistro: RegistroPonto?): String {
